@@ -28,6 +28,9 @@ ffmpeg with mp4 and mp2 support
 curl
 wget
 
+Required Libraries
+avahi
+
 In it's current form this program will not work.  You should be able to hack it into something useful.  
 
 Files
