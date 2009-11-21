@@ -6,7 +6,7 @@ import inspect, operator
 #Look for tivo sharesi
 TYPE = '_tivo-videos._tcp'
 #dbus.String(u'Gaston')
-TIVOS=frozenset(('Gaston','Lumiere','Cogsworth'))
+TIVOS=frozenset(('TIVO1','TIVO2NAME','TIVO3NAME'))
 FOUND_TIVOS=set()
 TIVO_DATA = dict()
 

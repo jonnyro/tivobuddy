@@ -1,0 +1,18 @@
+For lack of a better name I am calling this program TivoBuddy.
+
+It is based on a series of examples I found online for downloading the show list on a tivo and converting it to HTML or plain text.  I wrote a few additional utilities that scan for tivos on your network, store the show listing for each in a mysql database, and another one to convert them to mp4 using ffmpeg.
+
+Required utilities:
+tivodecode 
+ffmpeg with mp4 and mp2 support
+curl
+wget
+
+In it's current form this program will not work.  You should be able to hack it into something useful.  
+
+Files
+converter.py - you guessed it, handles the process of converting a tivo encrypted file into mp4 by calling ffmpeg.  It gets the files to convert from a database.  It is intended to be run in response to a cron job, so that it will encode your files in the background after you have selected the ones you want via a database table.  The intention is that the database table is updated from a web page.
+
+tivobuddy.py - this program calls code in findtivo.py, scans the network for a known list of tivos.  Gets their current IP addresses, and downloads their show lists.  It then populates a database table with all the shows and download URLs for said shows, so that converter.py can get to them easily.
+
+findtivo.py - good example of how to find tivos using the avahi package.  Most of this code is taken from examples online. I just put it together for use in finding tivos.
