@@ -1,3 +1,23 @@
+TivoBuddy - a program to automatically download and re-encode programs off of your tivos.
+Copyright (C) 2009 Jonathan S. Romero (jonnyro@jonnyro.com)
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
+
+
 For lack of a better name I am calling this program TivoBuddy.
 
 It is based on a series of examples I found online for downloading the show list on a tivo and converting it to HTML or plain text.  I wrote a few additional utilities that scan for tivos on your network, store the show listing for each in a mysql database, and another one to convert them to mp4 using ffmpeg.
