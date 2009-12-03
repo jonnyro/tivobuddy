@@ -1,6 +1,6 @@
 TIVO="TIVO_IP"
 MAK="YOURMAKHERE"
-
+import ConfigParser
 import libxml2
 import libxslt
 import sys
@@ -9,11 +9,62 @@ import MySQLdb
 import os
 import findtivo
 
+MAK=-1
+
+def checkTablesExist():
+
+	pass
+
+def loadGlobalSettings():
+	global MAK
+	global DB_FILE
+
+	if (os.path.exists("config.ini")):
+		config = ConfigParser.ConfigParser()
+		config.readfp(open('config.ini'))
+	else:
+		print "Configuration File Not Found"
+
+	#Attempt to load media access key
+	try:
+		MAK=config.get("Account Settings","MediaAccessKey")
+
+	except:
+		print "Media Access Key not found in configuration file"
+		print ""
+		print "Format:"
+		print ""
+		print "[Account Settings]"
+		print "MediaAccessKey=111111132433"
+		print ""
+		print "Quitting"
+		sys.exit(-1)
+
+	#Attempt to load database filename
+	try:
+		DB_FILE = config.get("Database Settings","DBFileName")
+	except:
+		print "Database filename notfound in configuration file"
+		print ""
+		print "Format:"
+		print ""
+		print "[Database Settings]"
+		print "DBFileName=tivobuddy.sqlite"
+		print ""
+		print "Quitting"
+		sys.exit(-1)
+		
 def updateTivoShowCache(TIVO_ID, TIVO_IP):
+	conn = sqlite3.connect('tivo.db')
+	c = conn.cursor()
+
+
 
 	print "Attempting to open tivo at: " + str(TIVO_IP) + " with ID " + str(TIVO_ID)
 	url = "https://" + TIVO_IP + "/TiVoConnect?Command=QueryContainer&Container=%2FNowPlaying&Recurse=Yes" 
 	print "URL=" + url
+
+	#TODO: Set up gettivo.sh to accept Media Access Key as argument.
 	cmd = "./gettivo.sh " + TIVO_IP
 	print "CMD is " + cmd
 	os.system(cmd)
@@ -38,12 +89,14 @@ def updateTivoShowCache(TIVO_ID, TIVO_IP):
 	import math
 
 	f=open('./tivoroll.html')
-	
+
+	#Delete all shows for this tivo from the showbuffer
 	query = "DELETE FROM showbuffer WHERE tivoID=\"%s\"" % str(TIVO_ID)			
 	cursor.execute( query )
 	
 	   
-
+	#Iterate line by line over tivoroll.html converting each line
+	# into a format suitable for insertion into database
 	item = 0
 	curline = 0
 	for line in f:
@@ -60,36 +113,40 @@ def updateTivoShowCache(TIVO_ID, TIVO_IP):
 			description = linearr[1]
 		if (linearr[0] == "URL"):
 			URL = linearr[1]
+			#insert show entry into database
 			query = "INSERT INTO showbuffer SET tivoID=\"%s\", showname=\"%s\",showtitle=\"%s\",showdescription=\"%s\",showurl=\"%s\"" % tuple(map(MySQLdb.escape_string,(str(TIVO_ID), show, episode_title, description, URL)))
 			cursor.execute( query )
 		curline = curline + 1
 
 
 
-conn = MySQLdb.connect (host = "localhost", user="root", passwd="mysql_root_password", db="tivo") 
-cursor = conn.cursor ()
-cursor.execute ("SELECT ID,ip,description FROM boxes")
+if __name__ == "__main__":
+	#Confirm sqlite tables exist and match our specifications
+	if not checkTablesExist():
+		echo "Error initializing/connecting to sqlite database"
+		sys.exit(-1)
 
-tivos= findtivo.run_scan()
-print tivos
 
-for tivo_name in tivos.keys():
-	#row = cursor.fetchone ()
-	#if row == None:
-	#	break
-	
-	cursor.execute ("SELECT ID,ip,name FROM boxes WHERE name=\"" + tivo_name + "\"" )
-	data = cursor.fetchone()
+	conn = sqlite3.connect(
+	cursor.execute ("SELECT ID,ip,description FROM boxes")
 
-	ID = data[0]
-	
-	ip = tivos[tivo_name]
+	tivos= findtivo.run_scan()
+	print tivos
 
-	#update IP in boxes table
-	cursor.execute ("UPDATE boxes SET ip=\"" + ip + "\" WHERE ID=\"" + str(ID) + "\"")
+	for tivo_name in tivos.keys():
+		#List all of the tivos	
+		cursor.execute ("SELECT ID,ip,name FROM boxes WHERE name=\"" + tivo_name + "\"" )
+		data = cursor.fetchone()
 
-	#print row[0]
-	print "Tivo Name: " + tivo_name
-	print "Tivo IP: " + ip
-	print "matching ID: " + str(ID)
-	updateTivoShowCache(ID,ip)
+		ID = data[0]
+		
+		ip = tivos[tivo_name]
+
+		#update IP in boxes table
+		cursor.execute ("UPDATE boxes SET ip=\"" + ip + "\" WHERE ID=\"" + str(ID) + "\"")
+
+		#print row[0]
+		print "Tivo Name: " + tivo_name
+		print "Tivo IP: " + ip
+		print "matching ID: " + str(ID)
+		updateTivoShowCache(ID,ip)
