@@ -8,52 +8,37 @@ import signal, os
 #Look for tivo sharesi
 TYPE = '_tivo-videos._tcp'
 #dbus.String(u'Gaston')
-TIVOS=frozenset(('TIVO1','TIVO2NAME','TIVO3NAME'))
-FOUND_TIVOS=set()
-TIVO_DATA = dict()
 
 class TivoHunter:
 	
 
-	def __init__(self,maxDuration=5):
+	def __init__(self,maxDuration=5,debugDuringSearch=False):
 		self.main_loop= gobject.MainLoop()
 		self.loop = DBusGMainLoop()
 		self.bus = dbus.SystemBus(mainloop=self.loop)
-
-		#Set up an alarm to stop scanning when maxDuration expires
-		signal.signal(signal.SIGALRM, self.stop_scan)
-		signal.alarm(maxDuration)
+		gobject.timeout_add(maxDuration*1000,self.stop_scan)
+		self.debug = debugDuringSearch
+		self.TIVO_DATA = dict()
 		
 
-	def stop_scan(self,signum,frame):
-	    for (key,val) in TIVO_DATA:
-		print key + "," + val
-	    #print TIVO_DATA
-	    #sys.exit(0)
+	def stop_scan(self):
 	    self.main_loop.quit()
 
 	def service_resolved(self,*args):
-	    global TIVOS
-	    global FOUND_TIVOS
-	    global TIVO_DATA
-
-	    global finished
-	    if args[2] in TIVOS:
-		FOUND_TIVOS.add(str(args[2]))
-		TIVO_DATA[str(args[2])] = str(args[7])
-		if FOUND_TIVOS >= TIVOS:
-			#print "Stopping scan"
-			stop_scan()		
-	    print 'service resolved'
-	    print 'name:', args[2]
-	    print 'address:', args[7]
-	    print 'port:', args[8]
+	#	FOUND_TIVOS.add(str(args[2]))
+	    self.TIVO_DATA[str(args[2])] = str(args[7])
+	    if self.debug:
+	    	print 'service resolved'
+	    	print 'name:', args[2]
+	    	print 'address:', args[7]
+	    	print 'port:', args[8]
 
 	def print_error(self,*args):
 	    print 'error_handler'
 	    print args[0]
 	    
 	def myhandler(self,interface, protocol, name, stype, domain, flags):
+
 
 	    if flags & avahi.LOOKUP_RESULT_LOCAL:
 		    # local service, skip
@@ -66,10 +51,10 @@ class TivoHunter:
 
 	def run_scan(self):
 		global server
-		global TIVO_DATA
-		global sbrowser
-		global main_loop
+		#global sbrowser
+		#global main_loop
 
+		#Set up an alarm to stop scanning when maxDuration expires
 
 		server = dbus.Interface( self.bus.get_object(avahi.DBUS_NAME, '/'),
 		'org.freedesktop.Avahi.Server')
@@ -83,10 +68,13 @@ class TivoHunter:
 
 		
 		self.main_loop.run()
-
-		return TIVO_DATA
+		
+		return self.TIVO_DATA
 
 if __name__ == "__main__":
-	a = TivoHunter()
-	a.run_scan()
-	signal.alarm(0)
+	#Create TivoHunter object, set maximum search time to 5
+	a = TivoHunter(maxDuration=5,debugDuringSearch=False)
+#	signal.signal(signal.SIGALRM, a.stop_scan)
+#	signal.alarm(5)
+	print a.run_scan()
+	
