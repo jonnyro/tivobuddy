@@ -7,7 +7,8 @@
 import uuid
 
 class Show:
-	def __init__(self,title,description=None,url=None):
+	def __init__(self,showname,title,description=None,url=None):
+		self.showname 	 = showname
 		self.title	 = title
 		self.description = description
 		self.url	 = url

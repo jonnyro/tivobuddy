@@ -6,14 +6,21 @@ import sys
 import urllib2
 import os
 from findtivo import TivoHunter
+from tivobuddydb import Show, TivoBuddyDB
 
-MAK=-1
 class TivoBuddy:
 
 	def __init__(self,MAK):
 		self.mak = MAK
+		self.tivobdb = None
+	def setBackingStore(self, tivobdb):
+		self.tivobdb = tivobdb
 
-		
+	def getTivoShowCache(self):
+		if self.tivobdb is not None:
+			return self.tivobdb.getCacheContents()	
+		else:
+			return None
 	def updateTivoShowCache(self):
 		hunter = TivoHunter()
 		tivos = hunter.run_scan()
@@ -80,6 +87,9 @@ class TivoBuddy:
 					#Now we have everything to add to db
 					print "Show: " + show
 					print "EP:   " + episode_title
+
+					if self.tivobdb is not None:
+						self.tivobdb.addShowToCache(Show(show, episode_title, description, URL))
 				curline = curline + 1
 
 
@@ -88,7 +98,10 @@ if __name__ == "__main__":
 	print "Please enter MAK"
 	mak = raw_input()
 	a = TivoBuddy(mak)
+	d = TivoBuddyDB()
+	a.setBackingStore(d) 
 	a.updateTivoShowCache()
+	print a.getTivoShowCache()
 	print "Doing nothing"
 comment = """
 
