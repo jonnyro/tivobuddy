@@ -103,8 +103,26 @@ class TivoBuddy:
 	
 		return result	
 if __name__ == "__main__":
-	print "Please enter MAK"
-	mak = raw_input()
+
+	#First try to obtain mak from .tivodecode_mak
+	mak=""
+	makfile = os.path.expanduser("~/.tivodecode_mak")
+	try:
+		f = open(makfile,"r")
+		str = f.read()
+		mak = str
+		f.close()
+	except:
+		print "Unexpected error:", sys.exc_info()[0]
+
+		print "Please enter MAK"
+		mak = raw_input()
+		try:
+			f = open(makfile,"w")
+			f.write(mak)
+			f.close()	
+		except:
+			pass
 	a = TivoBuddy(mak)
 	print " Attempting to re-use existing show cache"
 	try:
