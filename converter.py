@@ -5,11 +5,34 @@ import sys
 import pickle
 from tivobuddy import TivoBuddy
 from tivobuddydb import Show, TivoBuddyDB
-
+from zlib import crc32
 class TivoConverter:
 	def __init__(self,MAK):
 		self.tivobdy = None
 		self.mak = MAK
+		self.encodelog = []
+		self.presetEncodeLog()
+	def __del__(self):
+		self.commitEncodeLog()
+	def presetEncodeLog(self):
+		print " Attempting to re-use existing encode log"
+		try:
+			input = open("tivoencodelog.pck","rb")
+			self.encodelog = pickle.load(input)
+			input.close()
+			print "Pre-existing encode log loaded"
+			a.setBackingStore(d) 
+		except:
+			print "No existing encode log found, starting with empty log"	
+	def commitEncodeLog(self):
+		try:
+			output = open("tivoencodelog.pck","wb")
+			pickle.dump(self.encodelog,output)
+			output.close()
+			print "Encode log stored"
+		except:
+			print "Unable to store encode log"
+
 	def setTivoManager(self, tivobdy):
 		self.tivobdy = tivobdy	
 	def convertShowsByName(self, showname):
@@ -21,18 +44,23 @@ class TivoConverter:
 		if self.tivobdy is not None:
 			showobj = self.tivobdy.getShowByUUID(targetUUID)
 			filename = showobj.getFriendlyFilename()			
+			crc = crc32(filename)
+			for (checksum,filename) in self.encodelog:
+				if checksum == crc:
+					print "Skipping " + filename + " because it's already in encode log"
+					return
+
 			url = showobj.getURL() 
 			print "Filename: " + filename
 			print "URL: " + url
 
-			command = "/usr/bin/curl -k --digest -u tivo:" + self.mak + " -c cookies.txt \'" + url + "\' | tivodecode -m " + self.mak + " -- - > tmp.avi"
-			os.system(command)
-
-			command = "ffmpeg -y -i tmp.avi -b 600k tmp.avi.mp4"
+			command = "/usr/bin/curl -k --digest -u tivo:" + self.mak + " -c cookies.txt \'" + url + "\' | tivodecode -m " + self.mak + " -- - | ffmpeg -y -i - -b 600k tmp.avi.mp4 2> /dev/null"
 			res = os.system(command)
+
 			if (res == 0):
 				command = "mv tmp.avi.mp4 " + "~/video_output/" + filename
 				res = os.system(command)
+				self.encodelog.append((crc,filename))
 
 if __name__ == "__main__":
 	#First try to obtain mak from .tivodecode_mak

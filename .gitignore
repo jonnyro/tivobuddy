@@ -1,4 +1,6 @@
 *.avi
+*.mp4
+cookies.txt
 *.pyc
 *.pck
 tivoroll.html
