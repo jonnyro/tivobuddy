@@ -20,6 +20,10 @@ class Show:
 		return self.url
 	def getShowName(self):
 		return self.showname
+	def getFriendlyFilename(self):
+		filename = self.showname + "-" + self.title + ".mp4"
+		filename = filename.replace(" ", "-")
+		return filename
 
 class TivoBuddyDB:
 	def __init__(self):
