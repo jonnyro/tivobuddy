@@ -73,16 +73,16 @@ class TivoBuddy:
 				linearr = line.split("|")
 
 				if (linearr[0] == "Show"):
-					show = linearr[1]
+					show = linearr[1].rstrip("\n")
 					episode_title = ""
 					description = ""
 					URL = ""
 				if (linearr[0] == "EpisodeTitle"):
-					episode_title = linearr[1]
+					episode_title = linearr[1].rstrip("\n")
 				if (linearr[0] == "Description"):
-					description = linearr[1]
+					description = linearr[1].rstrip("\n")
 				if (linearr[0] == "URL"):
-					URL = linearr[1]
+					URL = linearr[1].rstrip("\n")
 					#insert show entry into database
 		#			query = "INSERT INTO showbuffer SET tivoID=\"%s\", showname=\"%s\",showtitle=\"%s\",showdescription=\"%s\",showurl=\"%s\"" % tuple(map(MySQLdb.escape_string,(str(TIVO_ID), show, episode_title, description, URL)))
 					#cursor.execute( query )
@@ -95,7 +95,13 @@ class TivoBuddy:
 				curline = curline + 1
 
 
-
+	def getShowList(self):
+		result = set() 
+		showcache = self.getTivoShowCache()
+		for (uid, showobj) in showcache:
+			result.add(showobj.getShowName())
+	
+		return result	
 if __name__ == "__main__":
 	print "Please enter MAK"
 	mak = raw_input()
@@ -116,7 +122,7 @@ if __name__ == "__main__":
 		pickle.dump(d,output)
 		output.close()
 		print "Show cache updated"
-
+	print a.getShowList()
 
 #	print a.getTivoShowCache()
 comment = """

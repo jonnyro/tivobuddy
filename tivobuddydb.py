@@ -18,6 +18,8 @@ class Show:
 		return self.description
 	def getURL(self):
 		return self.url
+	def getShowName(self):
+		return self.showname
 
 class TivoBuddyDB:
 	def __init__(self):
