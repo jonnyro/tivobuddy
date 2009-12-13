@@ -5,6 +5,8 @@ import libxslt
 import sys
 import urllib2
 import os
+import pickle
+
 from findtivo import TivoHunter
 from tivobuddydb import Show, TivoBuddyDB
 
@@ -85,8 +87,8 @@ class TivoBuddy:
 		#			query = "INSERT INTO showbuffer SET tivoID=\"%s\", showname=\"%s\",showtitle=\"%s\",showdescription=\"%s\",showurl=\"%s\"" % tuple(map(MySQLdb.escape_string,(str(TIVO_ID), show, episode_title, description, URL)))
 					#cursor.execute( query )
 					#Now we have everything to add to db
-					print "Show: " + show
-					print "EP:   " + episode_title
+		#			print "Show: " + show
+		#			print "EP:   " + episode_title
 
 					if self.tivobdb is not None:
 						self.tivobdb.addShowToCache(Show(show, episode_title, description, URL))
@@ -98,11 +100,25 @@ if __name__ == "__main__":
 	print "Please enter MAK"
 	mak = raw_input()
 	a = TivoBuddy(mak)
-	d = TivoBuddyDB()
-	a.setBackingStore(d) 
-	a.updateTivoShowCache()
-	print a.getTivoShowCache()
-	print "Doing nothing"
+	print " Attempting to re-use existing show cache"
+	try:
+		input = open("tivocache.pck","rb")
+		d = pickle.load(input)
+		input.close()
+		print "Pre-existing show cache loaded"
+		a.setBackingStore(d) 
+	except:	
+		print "unable to load pre-existing show cache"
+		d = TivoBuddyDB()
+		a.setBackingStore(d)
+		a.updateTivoShowCache()
+		output = open("tivocache.pck","wb")
+		pickle.dump(d,output)
+		output.close()
+		print "Show cache updated"
+
+
+#	print a.getTivoShowCache()
 comment = """
 
 
