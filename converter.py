@@ -21,7 +21,7 @@ class TivoConverter:
 			self.encodelog = pickle.load(input)
 			input.close()
 			print "Pre-existing encode log loaded"
-			a.setBackingStore(d) 
+#			a.setBackingStore(d) 
 		except:
 			print "No existing encode log found, starting with empty log"	
 	def commitEncodeLog(self):
