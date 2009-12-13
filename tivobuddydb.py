@@ -23,6 +23,7 @@ class Show:
 	def getFriendlyFilename(self):
 		filename = self.showname + "-" + self.title + ".mp4"
 		filename = filename.replace(" ", "-")
+		filename = filename.replace("*", "_")
 		return filename
 
 class TivoBuddyDB:
