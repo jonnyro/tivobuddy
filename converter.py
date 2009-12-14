@@ -87,10 +87,12 @@ class TivoConverter:
 				command = "time tivodecode -o " + filename + ".mp2 " + filename + ".tivo"
 				res = os.system(command)
 			if (res == 0):
+				os.system("rm -f " + filename + ".tivo")
 				command = "ffmpeg -b 600k -i " + filename + ".mp2 " + filename + ".mp4"
 	
 				res = os.system(command)
 			if (res == 0):
+				os.system("rm -f " + filename + ".mp2")
 				res = os.system("mv " + filename + ".mp4 ~/video_output")
 				self.encodelog.append((crc,filename))
 				self.commitEncodeLog()
