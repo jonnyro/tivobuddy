@@ -1,4 +1,6 @@
 *.avi
+*.tivo
+*.mp2
 *.mp4
 cookies.txt
 *.pyc
