@@ -80,13 +80,20 @@ class TivoConverter:
 			print "Filename: " + filename
 			print "URL: " + url
 
-			command = "/usr/bin/curl -k --digest -u tivo:" + self.mak + " -c cookies.txt \'" + url + "\' | tivodecode -m " + self.mak + " -- - | ffmpeg -y -i - -b 600k tmp.avi.mp4 2> /dev/null"
+			command = "time /usr/bin/curl --silent -k --retry 9 --digest -u tivo:" + self.mak + " -c cookies.txt \'" + url + "\' -o " + filename + ".tivo"
 			res = os.system(command)
 
 			if (res == 0):
-				command = "mv tmp.avi.mp4 " + "~/video_output/" + filename
+				command = "time tivodecode -o " + filename + ".mp2 " + filename + ".tivo"
 				res = os.system(command)
+			if (res == 0):
+				command = "ffmpeg -b 600k -i " + filename + ".mp2 " + filename + ".mp4"
+	
+				res = os.system(command)
+			if (res == 0):
+				res = os.system("mv " + filename + ".mp4 ~/video_output")
 				self.encodelog.append((crc,filename))
+				self.commitEncodeLog()
 
 if __name__ == "__main__":
 	#First try to obtain mak from .tivodecode_mak

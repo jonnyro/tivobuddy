@@ -21,7 +21,7 @@ class Show:
 	def getShowName(self):
 		return self.showname
 	def getFriendlyFilename(self):
-		filename = self.showname + "-" + self.title + ".mp4"
+		filename = self.showname + "-" + self.title
 		filename = filename.replace(" ", "-")
 		filename = filename.replace("*", "_")
 		filename = filename.replace("\'", "_")
