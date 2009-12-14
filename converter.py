@@ -6,6 +6,32 @@ import pickle
 from tivobuddy import TivoBuddy
 from tivobuddydb import Show, TivoBuddyDB
 from zlib import crc32
+class EncoderTargetManager:
+	def __init__(self):
+		try:
+			input = open("showstoencode.pck","rb")
+			self.showstoencode = pickle.load(input)
+			input.close()
+			print "Shows to encode list loaded"
+		except:
+			print "No shows to encode list found. Creating blank."
+			self.showstoencode = []
+			output = open("showstoencode.pck","wb")
+			pickle.dump(self.showstoencode,output)
+			output.close()
+			
+	def __del__(self):
+		print "Storing shows to encode archive"
+		output = open("showstoencode.pck","wb")
+		pickle.dump(self.showstoencode,output)
+		output.close()
+	def getShowsToEncode(self):
+		return self.showstoencode
+	def addShowToEncode(self,show):
+		print "Adding show to encode queue " + show
+		self.showstoencode.append(show)
+	def clearEncodeList(self):
+		self.showstoencode = []
 class TivoConverter:
 	def __init__(self,MAK):
 		self.tivobdy = None
@@ -103,6 +129,9 @@ if __name__ == "__main__":
 
 	conv = TivoConverter(mak)
 	conv.setTivoManager(a)
+
+	ws = EncoderTargetManager()
 	
-	conv.convertShowsByName("M*A*S*H")
+	for show in ws.getShowsToEncode():
+		conv.convertShowsByName(show)
 	

@@ -24,6 +24,7 @@ class Show:
 		filename = self.showname + "-" + self.title + ".mp4"
 		filename = filename.replace(" ", "-")
 		filename = filename.replace("*", "_")
+		filename = filename.replace("\'", "_")
 		return filename
 
 class TivoBuddyDB:

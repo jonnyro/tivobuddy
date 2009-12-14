@@ -5,9 +5,10 @@ import sys
 import pickle
 from tivobuddy import TivoBuddy
 from tivobuddydb import Show, TivoBuddyDB
-from converter import TivoConverter
+from converter import TivoConverter,EncoderTargetManager
 from zlib import crc32
 if __name__ == "__main__":
+	ws = EncoderTargetManager()
 	#First try to obtain mak from .tivodecode_mak
 	mak=""
 	makfile = os.path.expanduser("~/.tivodecode_mak")
@@ -56,6 +57,7 @@ if __name__ == "__main__":
 		print "1) List all shows by name"
 		print "2) Mark show for encode"
 		print "3) Show current encode list"
+		print "8) Clear current encode list"
 		print "q) Quit"
 		print ""
 		print "Choice:",
@@ -66,9 +68,20 @@ if __name__ == "__main__":
 				print "%d) %s" % (i,show) 
 				i = i + 1
 		elif (choice == "2"):
-			pass
+			print "Enter list of shows to encode separated by spaces:"
+			shows_to_encode = raw_input()
+			print "You have selected " + shows_to_encode
+			showlistaslist = list(showlist)
+			for key in shows_to_encode.split(" "):
+				print key + ")" + showlistaslist[int(key)]
+				ws.addShowToEncode(showlistaslist[int(key)])	
 		elif (choice == "3"):
-			pass
+			print "Shows currently in encode queue"
+			for show in  ws.getShowsToEncode():
+				print show
+		elif (choice == "8"):
+			print "Clearing encode queue"
+			ws.clearEncodeList()
 		elif (choice == "q"):
 			sys.exit(0)
 	#conv.convertShowsByName("M*A*S*H")
