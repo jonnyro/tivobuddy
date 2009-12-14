@@ -64,23 +64,22 @@ class TivoConverter:
 	def convertShowsByName(self, showname):
 		if self.tivobdy is not None:
 			shows = self.tivobdy.getShowsByName(showname)
+			random.shuffle(shows)
 			for (uid,show) in shows:
 				self.convertShowByGUID(uid)
 	def convertShowByGUID(self,targetUUID):
 		if self.tivobdy is not None:
 			showobj = self.tivobdy.getShowByUUID(targetUUID)
-			filename = showobj.getFriendlyFilename()			
-			crc = crc32(filename)
-			for (checksum,filename) in self.encodelog:
-				if checksum == crc:
+			filename = showobj.getFriendlyFilename() 
+ 
+			for fname in self.encodelog:
+				if filename == fname:
 					print "Skipping " + filename + " because it's already in encode log"
 					return
 
 			url = showobj.getURL() 
-			print "Filename: " + filename
-			print "URL: " + url
 
-			command = "time /usr/bin/curl --silent -k --retry 9 --digest -u tivo:" + self.mak + " -c cookies.txt \'" + url + "\' -o " + filename + ".tivo"
+			command = "/usr/bin/curl -k --retry 9 --digest -u tivo:" + self.mak + " -c cookies.txt \'" + url + "\' -o " + filename + ".tivo"
 			res = os.system(command)
 
 			if (res == 0):
@@ -118,22 +117,14 @@ if __name__ == "__main__":
 		except:
 			pass
 	a = TivoBuddy(mak)
-	print " Attempting to re-use existing show cache"
-	try:
-		input = open("tivocache.pck","rb")
-		d = pickle.load(input)
-		input.close()
-		print "Pre-existing show cache loaded"
-		a.setBackingStore(d) 
-	except:	
-		print "unable to load pre-existing show cache"
-		d = TivoBuddyDB()
-		a.setBackingStore(d)
-		a.updateTivoShowCache()
-		output = open("tivocache.pck","wb")
-		pickle.dump(d,output)
-		output.close()
-		print "Show cache updated"
+	print "Intentionally refreshing show cache"
+	d = TivoBuddyDB()
+	a.setBackingStore(d)
+	a.updateTivoShowCache()
+	output = open("tivocache.pck","wb")
+	pickle.dump(d,output)
+	output.close()
+	print "Show cache updated"
 	#print a.getShowList()
 
 	conv = TivoConverter(mak)

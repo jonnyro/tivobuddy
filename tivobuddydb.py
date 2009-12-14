@@ -21,10 +21,12 @@ class Show:
 	def getShowName(self):
 		return self.showname
 	def getFriendlyFilename(self):
+		print "Title: " + self.title + " Showname: " + self.showname
 		filename = self.showname + "-" + self.title
 		filename = filename.replace(" ", "-")
 		filename = filename.replace("*", "_")
 		filename = filename.replace("\'", "_")
+		filename = filename.replace(";", "_")
 		return filename
 
 class TivoBuddyDB:
@@ -34,7 +36,7 @@ class TivoBuddyDB:
 	def initializeBackingStore(self):
 		pass
 	def addShowToCache(self,ShowObj):
-		GUID = uuid.uuid4()
+		GUID = uuid.uuid4().hex
 		self.shows.append((GUID,ShowObj))
 	def clearShowCache(self):
 		self.shows = []
