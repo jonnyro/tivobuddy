@@ -48,7 +48,29 @@ if __name__ == "__main__":
 
 	conv = TivoConverter(mak)
 	conv.setTivoManager(a)
-	print a.getShowList()	
+	#print a.getShowList()	
+
+	showlist = a.getShowList()
+	while(1):
+		print "Menu"
+		print "1) List all shows by name"
+		print "2) Mark show for encode"
+		print "3) Show current encode list"
+		print "q) Quit"
+		print ""
+		print "Choice:",
+		choice = raw_input()
+		if (choice == "1"):
+			i=0
+			for show in showlist:
+				print "%d) %s" % (i,show) 
+				i = i + 1
+		elif (choice == "2"):
+			pass
+		elif (choice == "3"):
+			pass
+		elif (choice == "q"):
+			sys.exit(0)
 	#conv.convertShowsByName("M*A*S*H")
 	
 else:
