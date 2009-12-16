@@ -87,13 +87,13 @@ class TivoConverter:
 				res = os.system(command)
 			if (res == 0):
 				os.system("rm -f " + filename + ".tivo")
-				command = "ffmpeg -b 600k -i " + filename + ".mp2 " + filename + ".mp4"
+				command = "HandBrakeCLI --preset iPod -S 700 --two-pass -i " + filename + ".mp2 -o " + filename + ".mp4"
 	
 				res = os.system(command)
 			if (res == 0):
 				os.system("rm -f " + filename + ".mp2")
 				res = os.system("mv " + filename + ".mp4 ~/video_output")
-				self.encodelog.append((crc,filename))
+				self.encodelog.append(filename)
 				self.commitEncodeLog()
 
 if __name__ == "__main__":
