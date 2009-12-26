@@ -78,8 +78,7 @@ class TivoConverter:
 					return
 
 			url = showobj.getURL() 
-
-			command = "/usr/bin/curl -k --retry 9 --digest -u tivo:" + self.mak + " -c cookies.txt \'" + url + "\' -o " + filename + ".tivo"
+			command = "/usr/bin/curl -k --retry 9 --limit-rate 800k --digest -u tivo:" + self.mak + " -c cookies.txt \'" + url + "\' -o " + filename + ".tivo"
 			res = os.system(command)
 
 			if (res == 0):
@@ -87,7 +86,7 @@ class TivoConverter:
 				res = os.system(command)
 			if (res == 0):
 				os.system("rm -f " + filename + ".tivo")
-				command = "HandBrakeCLI --preset iPod -S 700 --two-pass -i " + filename + ".mp2 -o " + filename + ".mp4"
+				command = "HandBrakeCLI --preset iPod -S 700 --two-pass -T -i " + filename + ".mp2 -o " + filename + ".mp4"
 	
 				res = os.system(command)
 			if (res == 0):
