@@ -21,12 +21,13 @@ class Show:
 	def getShowName(self):
 		return self.showname
 	def getFriendlyFilename(self):
-		print "Title: " + self.title + " Showname: " + self.showname
 		filename = self.showname + "-" + self.title
 		filename = filename.replace(" ", "-")
 		filename = filename.replace("*", "_")
 		filename = filename.replace("\'", "_")
 		filename = filename.replace(";", "_")
+		filename = filename.replace('&', "and")
+		print "Title: " + self.title + " Showname: " + self.showname + " Converted Title: " + filename
 		return filename
 
 class TivoBuddyDB:
