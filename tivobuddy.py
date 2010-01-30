@@ -84,7 +84,7 @@ class TivoBuddy:
 					URL = linearr[1].rstrip("\n")
 
 					if self.tivobdb is not None:
-						self.tivobdb.addShowToCache(Show(show, episode_title, description, URL))
+						self.tivobdb.addShowToCache(Show(show, episode_title, description, URL,ip))
 				curline = curline + 1
 
 	def getShowByUUID(self,targetUUID):

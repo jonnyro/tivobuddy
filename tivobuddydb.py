@@ -7,11 +7,12 @@
 import uuid
 
 class Show:
-	def __init__(self,showname,title,description=None,url=None):
+	def __init__(self,showname,title,description=None,url=None,ip=None):
 		self.showname 	 = showname
 		self.title	 = title
 		self.description = description
 		self.url	 = url
+		self.ip 	 = ip
 	def getTitle(self):
 		return self.title
 	def getDescription(self):
@@ -29,7 +30,8 @@ class Show:
 		filename = filename.replace('&', "and")
 		print "Title: " + self.title + " Showname: " + self.showname + " Converted Title: " + filename
 		return filename
-
+	def getIP(self):
+		return self.ip
 class TivoBuddyDB:
 	def __init__(self):
 		self.shows = []
