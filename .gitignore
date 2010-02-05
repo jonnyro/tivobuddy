@@ -1,3 +1,4 @@
+config/tivos/*
 *.avi
 *.tivo
 *.mp2
